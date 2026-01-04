@@ -1,7 +1,8 @@
 import { MaterialIcons } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native"; // Import indispensable
 import { signOut } from "firebase/auth";
-import { collection, doc, onSnapshot, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import { collection, doc, getDocs, onSnapshot, query, serverTimestamp, updateDoc, where, writeBatch } from "firebase/firestore";
+import React, { useCallback, useEffect, useState } from "react";
 import { Alert, FlatList, SafeAreaView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Avatar, Badge, Button, Card, Text } from "react-native-paper";
 import { auth, db } from "../../services/firebase/config";
@@ -11,9 +12,36 @@ export default function ProfileScreen() {
   const [reservations, setReservations] = useState([]);
   const user = auth.currentUser;
 
+  // Utilisation de useFocusEffect pour marquer comme lu CHAQUE FOIS que l'écran est affiché
+  useFocusEffect(
+    useCallback(() => {
+      const markAsSeen = async () => {
+        if (!user) return;
+        try {
+          const q = query(
+            collection(db, "reservations"),
+            where("userId", "==", user.uid),
+            where("isSeenByClient", "==", false)
+          );
+          const snap = await getDocs(q);
+          if (snap.empty) return;
+
+          const batch = writeBatch(db);
+          snap.forEach((d) => {
+            batch.update(doc(db, "reservations", d.id), { isSeenByClient: true });
+          });
+          await batch.commit();
+          console.log("Badge client nettoyé");
+        } catch (e) {
+          console.log("Erreur markAsSeen:", e.message);
+        }
+      };
+      markAsSeen();
+    }, [user])
+  );
+
   useEffect(() => {
     if (!user) return;
-    // PRUDENCE : Le listener onSnapshot met à jour l'écran dès que l'Admin valide
     const q = query(collection(db, "reservations"), where("userId", "==", user.uid));
     const unsub = onSnapshot(q, (snap) => {
       const list = snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -25,7 +53,7 @@ export default function ProfileScreen() {
   const cancelReservation = (id) => {
     Alert.alert(
       "Annuler le rendez-vous", 
-      "Êtes-vous sûr ? Le centre de lavage sera immédiatement prévenu.", 
+      "Êtes-vous sûr ?", 
       [
         { text: "Garder le RDV", style: "cancel" },
         { 
@@ -36,9 +64,9 @@ export default function ProfileScreen() {
                 status: "canceled", 
                 updatedAt: serverTimestamp() 
               });
-              Alert.alert("Terminé", "Réservation annulée avec succès.");
+              Alert.alert("Terminé", "Réservation annulée.");
             } catch (e) { 
-              Alert.alert("Erreur", "Impossible d'annuler."); 
+              Alert.alert("Erreur", "Action impossible."); 
             }
           }
         }
@@ -78,7 +106,7 @@ export default function ProfileScreen() {
                 <Card.Content>
                   <View style={styles.resHeader}>
                     <Text style={styles.resService}>{item.serviceName}</Text>
-                    <Badge style={{ backgroundColor: status.color, color: '#fff', paddingHorizontal: 8 }}>
+                    <Badge style={{ backgroundColor: status.color, color: '#fff' }}>
                       {status.label}
                     </Badge>
                   </View>
@@ -90,7 +118,6 @@ export default function ProfileScreen() {
                       mode="text" 
                       onPress={() => cancelReservation(item.id)} 
                       textColor={Theme.colors.error}
-                      style={styles.cancelBtn}
                     >
                       Annuler
                     </Button>
@@ -114,8 +141,7 @@ const styles = StyleSheet.create({
   listSection: { flex: 1, padding: 20 },
   sectionTitle: { fontSize: scale(18), fontWeight: '900', marginBottom: 15, color: Theme.colors.secondary },
   resCard: { marginBottom: 15, backgroundColor: '#fff', borderRadius: 15, elevation: 2 },
-  resHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
-  resService: { fontWeight: 'bold', fontSize: scale(15) },
-  resSub: { color: '#64748B', fontSize: scale(13), marginTop: 4 },
-  cancelBtn: { alignSelf: 'flex-end', marginTop: -10 }
+  resHeader: { flexDirection: "row", justifyContent: "space-between", marginBottom: 8 },
+  resService: { fontWeight: "bold", fontSize: scale(15) },
+  resSub: { color: "#64748B", fontSize: scale(13), marginTop: 4 }
 });

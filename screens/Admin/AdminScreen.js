@@ -55,7 +55,6 @@ export default function AdminScreen({ navigation }) {
   const updateStatus = async (id, newStatus) => {
     const actionLabel = newStatus === "confirmed" ? "CONFIRMER" : "ANNULER";
     
-    // PRUDENCE : Alerte de confirmation avant modification en base de données
     Alert.alert(
       "Action requise",
       `Voulez-vous vraiment ${actionLabel} cette réservation ?`,
@@ -68,6 +67,7 @@ export default function AdminScreen({ navigation }) {
               const resRef = doc(db, "reservations", id);
               await updateDoc(resRef, {
                 status: newStatus,
+                isSeenByClient: false, // <-- AJOUTÉ ICI
                 updatedAt: serverTimestamp(),
               });
               Alert.alert("Succès", `Réservation ${newStatus === "confirmed" ? "validée" : "annulée"}.`);
@@ -182,5 +182,6 @@ const styles = StyleSheet.create({
   btnAction: { flex: 1, flexDirection: "row", height: 45, borderRadius: 12, justifyContent: "center", alignItems: "center" },
   btnActionText: { color: "#fff", fontWeight: "bold", marginLeft: 6 },
   center: { flex: 1, justifyContent: "center", alignItems: "center", marginTop: 50 },
-  emptyText: { color: "#94A3B8", fontSize: 16 }
+  emptyText: { color: "#94A3B8", fontSize: 16 },
+  backBtn: { marginRight: 15 }
 });

@@ -16,7 +16,7 @@ import {
   View
 } from "react-native";
 import { auth, db } from "../../services/firebase/config";
-import { Theme, scale } from "../../src/theme/Theme"; // Ajusté selon ta structure
+import { Theme, scale } from "../../src/theme/Theme";
 
 const pad2 = (n) => String(n).padStart(2, "0");
 
@@ -85,14 +85,16 @@ export default function BookingScreen({ route, navigation }) {
     try {
       setSaving(true);
 
-      // OBJET DATA STRICTEMENT COMPATIBLE AVEC TES RÈGLES
+      // --- MISE À JOUR ICI ---
+      // On s'assure d'inclure ownerId pour que le badge fonctionne !
       const reservationData = {
         userId: user.uid,
-        carwashId: String(carwash.id), // Doit exister dans /carwashes/
-        serviceId: String(service.id), // Doit exister dans /services/ et avoir le bon carwashId
+        carwashId: String(carwash.id),
+        ownerId: carwash.ownerId, // INDISPENSABLE pour le badge Admin
         
         carwashName: carwash.name,
         serviceName: service.name,
+        serviceId: String(service.id),
         price: Number(service.price) || 0,
         
         userPhone: phone.trim(),
@@ -112,7 +114,7 @@ export default function BookingScreen({ route, navigation }) {
       navigation.goBack();
     } catch (e) {
       console.error("Détail Erreur Firebase:", e);
-      Alert.alert("Erreur", "Action refusée par le serveur (Vérifiez votre rôle Client).");
+      Alert.alert("Erreur", "Action refusée par le serveur.");
     } finally {
       setSaving(false);
     }
