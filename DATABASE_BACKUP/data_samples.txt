@@ -1,0 +1,53 @@
+===========================================================
+EXEMPLES DE DONNÉES RÉELLES (FIRESTORE) - PROJET WASHCAR
+===========================================================
+
+1. COLLECTION : carwashes
+-----------------------------------------------------------
+Document ID: 9eDujr8iPJyB68tK5UYC
+{
+  "name": "Lavage Annaba Centre",
+  "address": "Rue Guroud Mohamed Nacer Annaba",
+  "ownerId": "ZBOoH8tnBgWISMFYdgaqTNemWA63",
+  "isActive": true,
+  "latitude": 124.4,
+  "longitude": 355.9,
+  "createdAt": "31 décembre 2025 à 19:32:44 UTC+1"
+}
+
+2. COLLECTION : users
+-----------------------------------------------------------
+Document ID: 5dGJnQTP7UVzZfHhDwHDHB...
+{
+  "email": "t@gmail.com",
+  "role": "client",
+  "phone": "",
+  "createdAt": "2 janvier 2026 à 02:35:15 UTC+1"
+}
+
+3. COLLECTION : services
+-----------------------------------------------------------
+Document ID: 3ttdnugLvvscvvjgVGE1
+{
+  "name": "Lavage extérieur+intérieur",
+  "price": 2500,
+  "duration": 60,
+  "carwashId": "YBsgeyhNMZWNnTduSrVh",
+  "ownerId": "ZBOoH8tnBgWISMFYdgaqTNemWA63",
+  "isActive": true
+}
+
+4. COLLECTION : reservations
+-----------------------------------------------------------
+Document ID: 42N7Ht81yH9ynPEMfW...
+{
+  "carwashName": "Home of carwashes",
+  "serviceName": "Lavage simple extérieur",
+  "price": 1000,
+  "date": "15/01/2026",
+  "time": "14:08",
+  "status": "confirmed",
+  "userEmail": "se245720@gmail.com",
+  "userAddress": "W56 El Hadjar",
+  "isSeenByClient": true
+}

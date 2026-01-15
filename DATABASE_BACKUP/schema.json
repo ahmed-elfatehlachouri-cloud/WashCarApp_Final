@@ -1,0 +1,67 @@
+{
+  "database_info": {
+    "system": "Google Cloud Firestore",
+    "project_id": "washcarapp-university-v2",
+    "region": "nam5 (United States)"
+  },
+  "collections": {
+    "users": {
+      "description": "Profils des utilisateurs authentifiés",
+      "fields": {
+        "email": "string (ex: t@gmail.com)",
+        "role": "string (client / owner)",
+        "phone": "string (numéro de contact)",
+        "createdAt": "timestamp (date d'inscription)"
+      }
+    },
+    "carwashes": {
+      "description": "Stations de lavage enregistrées sur la plateforme",
+      "fields": {
+        "name": "string (ex: Lavage Annaba Centre)",
+        "address": "string (localisation physique)",
+        "description": "string (détails sur la station)",
+        "ownerId": "string (ID de l'owner créateur)",
+        "isActive": "boolean (disponibilité)",
+        "latitude": "number (coordonnées GPS)",
+        "longitude": "number (coordonnées GPS)",
+        "photoUrl": "string (URL de l'image)",
+        "createdAt": "timestamp",
+        "updatedAt": "timestamp"
+      }
+    },
+    "services": {
+      "description": "Catalogue des types de lavages par station",
+      "fields": {
+        "name": "string (ex: Lavage rapide extérieur)",
+        "price": "number (prix en DZD)",
+        "duration": "number (temps en minutes)",
+        "isActive": "boolean",
+        "carwashId": "string (ID de la station parente)",
+        "ownerId": "string (ID du propriétaire)",
+        "createdAt": "timestamp"
+      }
+    },
+    "reservations": {
+      "description": "Historique et suivi des rendez-vous",
+      "fields": {
+        "carwashId": "string (ID de la station)",
+        "carwashName": "string (nom de la station au moment du build)",
+        "clientId": "string (ID du client qui réserve)",
+        "serviceId": "string (ID du service choisi)",
+        "serviceName": "string (nom du service)",
+        "price": "number (prix payé)",
+        "date": "string (format DD/MM/YYYY)",
+        "time": "string (format HH:mm)",
+        "status": "string (pending / confirmed / cancelled)",
+        "isSeenByClient": "boolean (système de notification)",
+        "userAddress": "string (adresse du client)",
+        "userEmail": "string (email du client)",
+        "userPhone": "string (téléphone du client)",
+        "userLatitude": "number",
+        "userLongitude": "number",
+        "createdAt": "timestamp",
+        "updatedAt": "timestamp"
+      }
+    }
+  }
+}
